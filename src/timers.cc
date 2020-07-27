@@ -23,7 +23,9 @@
 #else
 #include <fcntl.h>
 #ifndef BENCHMARK_OS_FUCHSIA
+#ifndef BENCHMARK_OS_PS4
 #include <sys/resource.h>
+#endif
 #endif
 #include <sys/time.h>
 #include <sys/types.h>  // this header must be included before 'sys/sysctl.h' to avoid compilation error on FreeBSD
@@ -77,7 +79,7 @@ double MakeTime(FILETIME const& kernel_time, FILETIME const& user_time) {
           static_cast<double>(user.QuadPart)) *
          1e-7;
 }
-#elif !defined(BENCHMARK_OS_FUCHSIA)
+#elif !defined(BENCHMARK_OS_FUCHSIA) && !defined(BENCHMARK_OS_PS4)
 double MakeTime(struct rusage const& ru) {
   return (static_cast<double>(ru.ru_utime.tv_sec) +
           static_cast<double>(ru.ru_utime.tv_usec) * 1e-6 +
@@ -130,6 +132,8 @@ double ProcessCPUUsage() {
   if (clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &spec) == 0)
     return MakeTime(spec);
   DiagnoseAndExit("clock_gettime(CLOCK_PROCESS_CPUTIME_ID, ...) failed");
+#elif defined(BENCHMARK_OS_PS4)
+  return 0.0;
 #else
   struct rusage ru;
   if (getrusage(RUSAGE_SELF, &ru) == 0) return MakeTime(ru);
@@ -193,7 +197,7 @@ std::string LocalDateTimeString() {
   char tz_offset[128];
   char storage[128];
 
-#if defined(BENCHMARK_OS_WINDOWS)
+#if defined(BENCHMARK_OS_WINDOWS) || defined(BENCHMARK_OS_PS4)
   std::tm *timeinfo_p = ::localtime(&now);
 #else
   std::tm timeinfo;
@@ -221,7 +225,7 @@ std::string LocalDateTimeString() {
   } else {
     // Unknown offset. RFC3339 specifies that unknown local offsets should be
     // written as UTC time with -00:00 timezone.
-#if defined(BENCHMARK_OS_WINDOWS)
+#if defined(BENCHMARK_OS_WINDOWS) || defined(BENCHMARK_OS_PS4)
     // Potential race condition if another thread calls localtime or gmtime.
     timeinfo_p = ::gmtime(&now);
 #else

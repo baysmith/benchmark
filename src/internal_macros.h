@@ -53,7 +53,11 @@
     #endif
   #endif
 #elif defined(__FreeBSD__)
-  #define BENCHMARK_OS_FREEBSD 1
+  #if defined(__ORBIS__)
+    #define BENCHMARK_OS_PS4 1
+  #else
+    #define BENCHMARK_OS_FREEBSD 1
+  #endif
 #elif defined(__NetBSD__)
   #define BENCHMARK_OS_NETBSD 1
 #elif defined(__OpenBSD__)

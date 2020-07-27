@@ -23,7 +23,9 @@
 #else
 #include <fcntl.h>
 #ifndef BENCHMARK_OS_FUCHSIA
+#ifndef BENCHMARK_OS_PS4
 #include <sys/resource.h>
+#endif
 #endif
 #include <sys/time.h>
 #include <sys/types.h>  // this header must be included before 'sys/sysctl.h' to avoid compilation error on FreeBSD
@@ -428,6 +430,8 @@ std::string GetSystemName() {
   str = converter.to_bytes(wStr);
 #endif
   return str;
+#elif defined(BENCHMARK_OS_PS4)
+  return std::string();
 #else // defined(BENCHMARK_OS_WINDOWS)
 #ifndef HOST_NAME_MAX
 #ifdef BENCHMARK_HAS_SYSCTL // BSD/Mac Doesnt have HOST_NAME_MAX defined
@@ -476,6 +480,8 @@ int GetNumCPUs() {
   return NumCPU;
 #elif defined(BENCHMARK_OS_QNX)
   return static_cast<int>(_syspage_ptr->num_cpu);
+#elif defined(BENCHMARK_OS_PS4)
+    return 8;
 #else
   int NumCPUs = 0;
   int MaxID = -1;

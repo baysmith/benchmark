@@ -31,6 +31,10 @@
 #include <unistd.h>
 #endif  // BENCHMARK_OS_WINDOWS
 
+#ifdef BENCHMARK_OS_PS4
+extern char* getenv(const char* env_var);
+#endif
+
 namespace benchmark {
 namespace {
 #ifdef BENCHMARK_OS_WINDOWS
@@ -160,6 +164,8 @@ bool IsColorTerminal() {
   // On Windows the TERM variable is usually not set, but the
   // console there does support colors.
   return 0 != _isatty(_fileno(stdout));
+#elif defined(BENCHMARK_OS_PS4)
+  return true;
 #else
   // On non-Windows platforms, we rely on the TERM variable. This list of
   // supported TERM values is copied from Google Test:

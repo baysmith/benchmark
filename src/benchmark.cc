@@ -19,7 +19,9 @@
 
 #ifndef BENCHMARK_OS_WINDOWS
 #ifndef BENCHMARK_OS_FUCHSIA
+#ifndef BENCHMARK_OS_PS4
 #include <sys/resource.h>
+#endif
 #endif
 #include <sys/time.h>
 #include <unistd.h>

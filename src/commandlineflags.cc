@@ -21,6 +21,15 @@
 #include <iostream>
 #include <limits>
 
+#include "internal_macros.h"
+
+#ifdef BENCHMARK_OS_PS4
+char* getenv(const char* env_var)
+{
+    return nullptr;
+}
+#endif
+
 namespace benchmark {
 namespace {
 
